@@ -15,25 +15,53 @@ class MailService
 
     public function __construct($smtpHost = null, $smtpPort = null, $smtpUser = null, $smtpPassword = null)
     {
-        // Configuración por defecto (puedes cambiar estos valores)
-        $smtpHost = $smtpHost ?? 'smtp.gmail.com';
-        $smtpPort = $smtpPort ?? 587;
-        $smtpUser = $smtpUser ?? getenv('SMTP_USER');
-        $smtpPassword = $smtpPassword ?? getenv('SMTP_PASSWORD');
+        // Cargar configuración desde .env
+        $this->cargarConfiguracionEnv();
         
-        $this->fromEmail = $smtpUser ?? 'noreply@tuempresa.com';
-        $this->fromName = 'Sistema de Empleados y Ventas';
+        // Configuración SMTP
+        $smtpHost = $smtpHost ?? $this->getEnvValue('MAIL_HOST', 'smtp.gmail.com');
+        $smtpPort = $smtpPort ?? $this->getEnvValue('MAIL_PORT', 587);
+        $smtpUser = $smtpUser ?? $this->getEnvValue('MAIL_USERNAME');
+        $smtpPassword = $smtpPassword ?? $this->getEnvValue('MAIL_PASSWORD');
+        
+        $this->fromEmail = $this->getEnvValue('MAIL_FROM_ADDRESS', $smtpUser ?? 'noreply@sistema.com');
+        $this->fromName = $this->getEnvValue('MAIL_FROM_NAME', 'Sistema UVT - Gestión Empleados');
 
         // Crear el transporte SMTP
         if ($smtpUser && $smtpPassword) {
             $dsn = sprintf('smtp://%s:%s@%s:%d', $smtpUser, $smtpPassword, $smtpHost, $smtpPort);
         } else {
-            // Usar sendmail o transport nulo para desarrollo
+            // Usar transport nulo para desarrollo
             $dsn = 'null://null';
         }
 
         $transport = Transport::fromDsn($dsn);
         $this->mailer = new Mailer($transport);
+    }
+
+    /**
+     * Cargar configuración desde .env
+     */
+    private function cargarConfiguracionEnv()
+    {
+        $envFile = __DIR__ . '/../../.env';
+        if (file_exists($envFile)) {
+            $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            foreach ($lines as $line) {
+                if (strpos($line, '=') !== false && strpos($line, '#') !== 0) {
+                    list($key, $value) = explode('=', $line, 2);
+                    $_ENV[trim($key)] = trim($value);
+                }
+            }
+        }
+    }
+
+    /**
+     * Obtener valor de variable de entorno
+     */
+    private function getEnvValue($key, $default = null)
+    {
+        return $_ENV[$key] ?? getenv($key) ?? $default;
     }
 
     /**
