@@ -87,8 +87,8 @@ taller-php-postgres/
 
 2. **Configurar base de datos:**
    - Asegúrate de que PostgreSQL esté ejecutándose
-   - Usuario: `postgres`
-   - Contraseña: `950430`
+   - Usuario: `********`
+   - Contraseña: `********`
    - Puerto: `5432`
 
 3. **Inicializar base de datos:**
