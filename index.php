@@ -46,6 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['message'] = $resultado['error'];
                 $_SESSION['message_type'] = 'error';
             }
+            $_SESSION['tab_activa'] = 'empleados'; // Recordar que vamos a la pestaña empleados
             header('Location: index.php');
             exit;
             

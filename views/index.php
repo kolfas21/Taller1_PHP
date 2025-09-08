@@ -1,4 +1,5 @@
-<!DOCTYPE 
+<!DOCTYPE html>
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,13 +27,13 @@
         <div class="mb-3">
             <div class="border-b border-gray-200">
                 <nav class="-mb-px flex space-x-8">
-                    <button type="button" onclick="showTab('empleados'); return false;" id="tab-empleados" class="tab-button py-2 px-1 border-b-2 font-medium text-sm <?= $tabActiva === 'empleados' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' ?>">
+                    <button type="button" id="tab-empleados" class="tab-button py-2 px-1 border-b-2 font-medium text-sm <?= $tabActiva === 'empleados' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' ?>">
                         Empleados
                     </button>
-                    <button type="button" onclick="showTab('ventas'); return false;" id="tab-ventas" class="tab-button py-2 px-1 border-b-2 font-medium text-sm <?= $tabActiva === 'ventas' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' ?>">
+                    <button type="button" id="tab-ventas" class="tab-button py-2 px-1 border-b-2 font-medium text-sm <?= $tabActiva === 'ventas' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' ?>">
                         Ventas
                     </button>
-                    <button type="button" onclick="showTab('calculadoras'); return false;" id="tab-calculadoras" class="tab-button py-2 px-1 border-b-2 font-medium text-sm <?= $tabActiva === 'calculadoras' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' ?>">
+                    <button type="button" id="tab-calculadoras" class="tab-button py-2 px-1 border-b-2 font-medium text-sm <?= $tabActiva === 'calculadoras' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' ?>">
                         Calculadoras
                     </button>
                 </nav>
@@ -440,8 +441,28 @@
             }
         }
 
-        // Inicializar la primera pestaña
+        // Inicializar cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', function() {
+            // Configurar los event listeners para los botones de pestañas
+            document.getElementById('tab-empleados').addEventListener('click', function(e) {
+                e.preventDefault();
+                showTab('empleados');
+                return false;
+            });
+            
+            document.getElementById('tab-ventas').addEventListener('click', function(e) {
+                e.preventDefault();
+                showTab('ventas');
+                return false;
+            });
+            
+            document.getElementById('tab-calculadoras').addEventListener('click', function(e) {
+                e.preventDefault();
+                showTab('calculadoras');
+                return false;
+            });
+            
+            // Mostrar la pestaña inicial
             showTab('<?= $tabActiva ?>');
         });
     </script>
