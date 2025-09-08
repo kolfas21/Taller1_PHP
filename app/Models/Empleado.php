@@ -62,17 +62,40 @@ class Empleado
         return $stmt->fetchAll();
     }
 
-    // Método matemático: Calcular salario neto con deducciones colombianas
+    // Método matemático: Calcular salario neto con deducciones colombianas 2025
     public function calcularSalarioNeto($salarioBruto)
     {
-        // Deducciones según ley colombiana (aproximadas)
+        // Deducciones según ley colombiana 2025
         $salud = $salarioBruto * 0.04; // 4% salud
         $pension = $salarioBruto * 0.04; // 4% pensión
         
-        // Retención en la fuente (simplificada)
+        // Retención en la fuente según tabla 2025 (UVT 2025 = $47,065)
+        $uvt = 47065;
         $retencion = 0;
-        if ($salarioBruto > 4700000) { // Más de 4.7M
-            $retencion = ($salarioBruto - 4700000) * 0.19;
+        
+        // Calcular UVT del salario
+        $salarioEnUvt = $salarioBruto / $uvt;
+        
+        if ($salarioEnUvt > 95 && $salarioEnUvt <= 150) {
+            // Entre 95 y 150 UVT: 19% sobre exceso de 95 UVT
+            $excesoUvt = $salarioEnUvt - 95;
+            $retencion = ($excesoUvt * $uvt) * 0.19;
+        } elseif ($salarioEnUvt > 150 && $salarioEnUvt <= 360) {
+            // Entre 150 y 360 UVT: 28% sobre exceso de 150 UVT + valor anterior
+            $baseAnterior = (150 - 95) * $uvt * 0.19; // 55 UVT al 19%
+            $excesoUvt = $salarioEnUvt - 150;
+            $retencion = $baseAnterior + (($excesoUvt * $uvt) * 0.28);
+        } elseif ($salarioEnUvt > 360) {
+            // Más de 360 UVT: 33% sobre exceso de 360 UVT + valores anteriores
+            $baseAnterior1 = (150 - 95) * $uvt * 0.19; // 55 UVT al 19%
+            $baseAnterior2 = (360 - 150) * $uvt * 0.28; // 210 UVT al 28%
+            $excesoUvt = $salarioEnUvt - 360;
+            $retencion = $baseAnterior1 + $baseAnterior2 + (($excesoUvt * $uvt) * 0.33);
+        }
+        
+        // Solo aplicar retención si supera las 95 UVT (aproximadamente $4.5M en 2025)
+        if ($salarioEnUvt <= 95) {
+            $retencion = 0;
         }
 
         $totalDeducciones = $salud + $pension + $retencion;
@@ -80,6 +103,7 @@ class Empleado
 
         return [
             'salario_bruto' => $salarioBruto,
+            'salario_en_uvt' => round($salarioEnUvt, 2),
             'deduccion_salud' => $salud,
             'deduccion_pension' => $pension,
             'retencion_fuente' => $retencion,

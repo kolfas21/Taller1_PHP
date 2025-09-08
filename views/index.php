@@ -269,12 +269,14 @@
                     
                     <?php if (isset($resultadoSalario)): ?>
                         <div class="mt-4 p-4 bg-gray-50 rounded">
-                            <h3 class="font-medium mb-2">Resultado:</h3>
+                            <h3 class="font-medium mb-2">Resultado del Cálculo (Colombia 2025):</h3>
                             <div class="text-sm space-y-1">
-                                <p>Salario Bruto: $<?= number_format($resultadoSalario['salario_bruto'], 2) ?></p>
+                                <p>Salario Bruto: $<?= number_format($resultadoSalario['salario_bruto'], 2) ?></p>                                
+                                <hr class="my-2">
                                 <p>Deducción Salud (4%): $<?= number_format($resultadoSalario['deduccion_salud'], 2) ?></p>
                                 <p>Deducción Pensión (4%): $<?= number_format($resultadoSalario['deduccion_pension'], 2) ?></p>
-                                <p>Retención Fuente: $<?= number_format($resultadoSalario['retencion_fuente'], 2) ?></p>
+                                <p>Retención en la Fuente: $<?= number_format($resultadoSalario['retencion_fuente'], 2) ?></p>
+                                <p class="text-red-600">Total Deducciones: $<?= number_format($resultadoSalario['total_deducciones'], 2) ?></p>
                                 <hr class="my-2">
                                 <p class="font-bold text-green-600">Salario Neto: $<?= number_format($resultadoSalario['salario_neto'], 2) ?></p>
                             </div>
