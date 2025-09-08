@@ -46,11 +46,15 @@
                 <!-- Formulario de empleados -->
                 <div class="bg-white p-3 rounded-lg shadow">
                     <h2 class="text-lg font-semibold mb-2">Agregar Empleado</h2>
-                    <form method="POST" action="index.php">
+                    <form method="POST" action="index.php" enctype="multipart/form-data">
                         <input type="hidden" name="action" value="add_empleado">
                         <div class="mb-2">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
                             <input type="text" name="nombre" required class="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500">
+                        </div>
+                        <div class="mb-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                            <input type="email" name="email" class="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500" placeholder="Opcional - para envío de bienvenida">
                         </div>
                         <div class="mb-2">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Salario</label>
@@ -67,6 +71,11 @@
                                 <option value="Finanzas">Finanzas</option>
                                 <option value="Operaciones">Operaciones</option>
                             </select>
+                        </div>
+                        <div class="mb-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Foto (Opcional)</label>
+                            <input type="file" name="foto_empleado" accept="image/*" class="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500">
+                            <p class="text-xs text-gray-500 mt-1">JPG, PNG, GIF o WebP - Máximo 2MB</p>
                         </div>
                         <button type="submit" class="w-full bg-blue-600 text-white py-1.5 px-3 text-sm rounded-md hover:bg-blue-700 focus:outline-none focus:ring-1 focus:ring-blue-500">
                             Agregar Empleado
@@ -107,7 +116,9 @@
                     <table class="min-w-full table-auto text-xs">
                         <thead class="bg-gray-50">
                             <tr>
+                                <th class="px-3 py-1.5 text-left text-xs font-medium text-gray-700">Foto</th>
                                 <th class="px-3 py-1.5 text-left text-xs font-medium text-gray-700">Nombre</th>
+                                <th class="px-3 py-1.5 text-left text-xs font-medium text-gray-700">Email</th>
                                 <th class="px-3 py-1.5 text-left text-xs font-medium text-gray-700">Salario</th>
                                 <th class="px-3 py-1.5 text-left text-xs font-medium text-gray-700">Departamento</th>
                                 <th class="px-3 py-1.5 text-left text-xs font-medium text-gray-700">Estado</th>
@@ -125,7 +136,23 @@
                                 }
                                 ?>
                                 <tr class="<?= $sobrePromedio ? 'bg-yellow-50' : '' ?>">
+                                    <td class="px-3 py-1.5 text-xs">
+                                        <?php if (!empty($empleado['foto'])): ?>
+                                            <img src="<?= htmlspecialchars($empleado['foto']) ?>" alt="Foto" class="w-8 h-8 rounded-full object-cover">
+                                        <?php else: ?>
+                                            <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                                                <span class="text-xs text-gray-600"><?= strtoupper(substr($empleado['nombre'], 0, 1)) ?></span>
+                                            </div>
+                                        <?php endif; ?>
+                                    </td>
                                     <td class="px-3 py-1.5 text-xs"><?= htmlspecialchars($empleado['nombre']) ?></td>
+                                    <td class="px-3 py-1.5 text-xs">
+                                        <?php if (!empty($empleado['email'])): ?>
+                                            <a href="mailto:<?= htmlspecialchars($empleado['email']) ?>" class="text-blue-600 hover:text-blue-800"><?= htmlspecialchars($empleado['email']) ?></a>
+                                        <?php else: ?>
+                                            <span class="text-gray-400">No disponible</span>
+                                        <?php endif; ?>
+                                    </td>
                                     <td class="px-3 py-1.5 text-xs">$<?= number_format($empleado['salario'], 2) ?></td>
                                     <td class="px-3 py-1.5 text-xs"><?= htmlspecialchars($empleado['departamento']) ?></td>
                                     <td class="px-3 py-1.5 text-xs">

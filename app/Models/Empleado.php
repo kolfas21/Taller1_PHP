@@ -21,9 +21,15 @@ class Empleado
 
     public function save($datos)
     {
-        $sql = "INSERT INTO empleados (nombre, salario, departamento) VALUES (?, ?, ?)";
+        $sql = "INSERT INTO empleados (nombre, salario, departamento, email, foto) VALUES (?, ?, ?, ?, ?)";
         $stmt = $this->db->prepare($sql);
-        return $stmt->execute([$datos['nombre'], $datos['salario'], $datos['departamento']]);
+        return $stmt->execute([
+            $datos['nombre'], 
+            $datos['salario'], 
+            $datos['departamento'],
+            $datos['email'] ?? null,
+            null // foto se actualiza después si es necesario
+        ]);
     }
 
     public function promedioSalarioPorDepartamento()
@@ -140,5 +146,44 @@ class Empleado
             default:
                 return $celsius;
         }
+    }
+
+    /**
+     * Obtener empleado por ID
+     */
+    public function getById($id)
+    {
+        $sql = "SELECT * FROM empleados WHERE id = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$id]);
+        return $stmt->fetch();
+    }
+
+    /**
+     * Obtener último ID insertado
+     */
+    public function getLastInsertId()
+    {
+        return $this->db->lastInsertId();
+    }
+
+    /**
+     * Actualizar foto del empleado
+     */
+    public function actualizarFoto($empleadoId, $rutaFoto)
+    {
+        $sql = "UPDATE empleados SET foto = ? WHERE id = ?";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([$rutaFoto, $empleadoId]);
+    }
+
+    /**
+     * Actualizar email del empleado
+     */
+    public function actualizarEmail($empleadoId, $email)
+    {
+        $sql = "UPDATE empleados SET email = ? WHERE id = ?";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([$email, $empleadoId]);
     }
 }

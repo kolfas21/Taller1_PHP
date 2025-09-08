@@ -3,16 +3,22 @@
 namespace App\Controllers;
 
 use App\Models\Venta;
+use App\Services\MailService;
+use App\Services\ImageService;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
 class VentaController
 {
     private $ventaModel;
+    private $mailService;
+    private $imageService;
 
     public function __construct()
     {
         $this->ventaModel = new Venta();
+        $this->mailService = new MailService();
+        $this->imageService = new ImageService();
     }
 
     public function index()
@@ -59,6 +65,29 @@ class VentaController
         $resultado = $this->ventaModel->save($datos);
         
         if ($resultado) {
+            // Procesar imagen del producto si se subió una
+            if (isset($_FILES['imagen_producto']) && $_FILES['imagen_producto']['error'] === UPLOAD_ERR_OK) {
+                $ventaId = $this->ventaModel->getLastInsertId();
+                $resultadoImagen = $this->imageService->procesarImagenProducto($_FILES['imagen_producto'], $ventaId);
+                
+                if (isset($resultadoImagen['success'])) {
+                    $this->ventaModel->actualizarImagen($ventaId, $resultadoImagen['ruta']);
+                }
+            }
+
+            // Enviar notificación de venta si hay email de administrador configurado
+            $adminEmail = getenv('ADMIN_EMAIL');
+            if ($adminEmail) {
+                $ventaData = [
+                    'producto' => $datos['producto'],
+                    'cantidad' => $datos['cantidad'],
+                    'precio' => $datos['precio_unitario'],
+                    'total' => $datos['cantidad'] * $datos['precio_unitario']
+                ];
+                
+                $this->mailService->enviarNotificacionVenta($adminEmail, $ventaData);
+            }
+
             return ['success' => 'Venta agregada exitosamente'];
         } else {
             return ['error' => 'Error al agregar venta'];

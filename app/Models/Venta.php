@@ -127,4 +127,22 @@ class Venta
                 return $metrosPorSegundo;
         }
     }
+
+    /**
+     * Obtener último ID insertado
+     */
+    public function getLastInsertId()
+    {
+        return $this->db->lastInsertId();
+    }
+
+    /**
+     * Actualizar imagen del producto en venta
+     */
+    public function actualizarImagen($ventaId, $rutaImagen)
+    {
+        $sql = "UPDATE ventas SET imagen_producto = ? WHERE id = ?";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([$rutaImagen, $ventaId]);
+    }
 }
